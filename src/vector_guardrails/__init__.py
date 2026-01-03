@@ -23,3 +23,12 @@ __all__ = [
     "SegmentSummary",
     "ThresholdPreset",
 ]
+
+from .alignment import align_anchors, anchor_mismatch_warning
+from .validation import validate_and_truncate_snapshot
+
+__all__ += [
+    "align_anchors",
+    "anchor_mismatch_warning",
+    "validate_and_truncate_snapshot",
+]
