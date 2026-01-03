@@ -1,0 +1,39 @@
+{
+  "name": "vector-guardrails-devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "workspaceFolder": "/workspaces/vector-guardrails",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/vector-guardrails,type=bind,consistency=cached",
+
+  "remoteUser": "vscode",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker",
+        "ryuta46.multi-command"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/workspaces/vector-guardrails/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "jupyter.kernels.excludePythonEnvironments": [
+          "/usr/bin/python",
+          "/usr/local/bin/python"
+        ]
+      }
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+
+  "remoteEnv": {
+    "PYTHONUNBUFFERED": "1"
+  },
+
+  "forwardPorts": [8888, 8501]
+}
