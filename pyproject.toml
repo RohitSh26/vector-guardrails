@@ -38,6 +38,9 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
 ]
 
+[project.scripts]
+vector-guardrails = "vector_guardrails.cli:main"
+
 [project.urls]
 Repository = "https://github.com/RohitSh26/vector-guardrails"
 
