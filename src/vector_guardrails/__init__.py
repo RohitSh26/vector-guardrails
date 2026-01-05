@@ -1,3 +1,4 @@
+from .compare import compare
 from .models import (
     AnchorAlignmentSummary,
     AnchorMetrics,
@@ -14,6 +15,7 @@ from .models import (
 __all__ = [
     "AnchorAlignmentSummary",
     "AnchorMetrics",
+    "compare",
     "ComparisonConfig",
     "ComparisonReport",
     "ExitCode",
@@ -31,4 +33,9 @@ __all__ += [
     "align_anchors",
     "anchor_mismatch_warning",
     "validate_and_truncate_snapshot",
+]
+
+
+__all__ += [
+    "compare",
 ]
