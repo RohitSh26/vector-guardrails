@@ -121,6 +121,19 @@ class AnchorAlignmentSummary(BaseModel):
     baseline_only_anchor_sample: list[str] = Field(default_factory=list)
     candidate_only_anchor_sample: list[str] = Field(default_factory=list)
 
+class AnchorIdentityMetrics(BaseModel):
+    """Per-anchor identity metrics (no risk classification yet)."""
+
+    model_config = ConfigDict(frozen=True)
+
+    anchor_id: str
+
+    overlap: float = Field(ge=0.0, le=1.0)
+    rank_displacement: float | None = Field(default=None, ge=0.0)
+
+    shared_count: int = Field(ge=0)
+    baseline_only_count: int = Field(ge=0)
+    candidate_only_count: int = Field(ge=0)
 
 class ComparisonReport(BaseModel):
     """Full comparison report."""

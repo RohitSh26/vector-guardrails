@@ -5,9 +5,9 @@ def overlap_at_k(baseline_neighbors: list[str], candidate_neighbors: list[str], 
     """
     Overlap@K = |intersection(topK_baseline, topK_candidate)| / K
 
-    Note: denominator is always K (not len(list)), by design.
+    Design choice: denominator is always K (not len(list)), for stability.
     """
-    if k <= 0:
+    if k < 1:
         raise ValueError("k must be >= 1")
 
     b = set(baseline_neighbors[:k])
@@ -22,7 +22,7 @@ def rank_displacement(
     Mean absolute rank displacement for shared items in top-K.
     Returns None if there is no overlap.
     """
-    if k <= 0:
+    if k < 1:
         raise ValueError("k must be >= 1")
 
     b_top = baseline_neighbors[:k]
@@ -31,7 +31,7 @@ def rank_displacement(
     b_rank = {item: i for i, item in enumerate(b_top)}
     c_rank = {item: i for i, item in enumerate(c_top)}
 
-    shared = set(b_rank.keys()) & set(c_rank.keys())
+    shared = set(b_rank) & set(c_rank)
     if not shared:
         return None
 
