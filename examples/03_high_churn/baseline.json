@@ -1,0 +1,4 @@
+{
+  "anchor_1": ["neighbor_a", "neighbor_b", "neighbor_c", "neighbor_d", "neighbor_e"],
+  "anchor_2": ["neighbor_f", "neighbor_g", "neighbor_h", "neighbor_i", "neighbor_j"]
+}

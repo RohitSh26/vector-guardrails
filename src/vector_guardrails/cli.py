@@ -25,20 +25,98 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _print_text_report(report) -> None:
-    # Minimal but readable; we’ll refine formatting later if needed
+    """Print human-readable comparison report with explanations."""
+    # Header with verdict
+    print("=" * 70)
     print(report.verdict_summary)
+    print("=" * 70)
     print()
-    print("SUMMARY:")
-    print(f"  Compared anchors: {report.alignment.compared_anchors}")
-    print(f"  Mean overlap@{report.config.k}: {report.overall_mean_overlap:.2f}")
-    print(f"  Churn rate: {report.overall_churn_rate:.2f}")
-    print(f"  Anchor jaccard: {report.alignment.anchor_jaccard:.2f}")
+
+    # Anchor alignment section
+    print("ANCHOR ALIGNMENT:")
+    print(f"  Compared: {report.alignment.compared_anchors} anchors present in both snapshots")
+
+    if report.alignment.anchor_jaccard < 1.0:
+        print(f"  Baseline only: {report.alignment.baseline_only_anchor_count} anchors")
+        print(f"  Candidate only: {report.alignment.candidate_only_anchor_count} anchors")
+
+    jaccard_pct = report.alignment.anchor_jaccard * 100
+    print(f"  Jaccard similarity: {report.alignment.anchor_jaccard:.2f} ({jaccard_pct:.0f}% anchor set overlap)")
+
+    if report.alignment.anchor_jaccard < report.config.thresholds.anchor_jaccard_warning:
+        print(f"    ⚠ Low anchor overlap may indicate query set mismatch")
     print()
+
+    # Retrieval quality metrics
+    print("RETRIEVAL METRICS:")
+
+    # Overlap
+    overlap_pct = report.overall_mean_overlap * 100
+    print(f"  Mean Overlap@{report.config.k}: {report.overall_mean_overlap:.2f} ({overlap_pct:.0f}%)")
+    print(f"    → Average fraction of neighbors that remained in top-{report.config.k}")
+
+    if report.overall_mean_overlap >= 0.90:
+        print(f"    ✓ Excellent stability")
+    elif report.overall_mean_overlap >= report.config.thresholds.overlap_warning:
+        print(f"    ✓ Good stability")
+    elif report.overall_mean_overlap >= report.config.thresholds.overlap_critical:
+        print(f"    ⚠ Moderate changes detected")
+    else:
+        print(f"    ✗ Significant semantic drift detected")
+    print()
+
+    # Churn rate
+    churn_pct = report.overall_churn_rate * 100
+    print(f"  Churn Rate: {report.overall_churn_rate:.2f} ({churn_pct:.0f}% of anchors)")
+    print(f"    → Fraction of anchors with overlap < {report.config.thresholds.overlap_warning:.2f}")
+
+    if report.overall_churn_rate == 0.0:
+        print(f"    ✓ No anchors showing degradation")
+    elif report.overall_churn_rate < report.config.thresholds.churn_warning:
+        print(f"    ✓ Low churn, isolated changes")
+    elif report.overall_churn_rate < report.config.thresholds.churn_critical:
+        print(f"    ⚠ Moderate churn, review recommended")
+    else:
+        print(f"    ✗ High churn, widespread changes")
+    print()
+
+    # Rank displacement (if available)
+    if report.overall_mean_displacement > 0.0:
+        print(f"  Mean Rank Displacement: {report.overall_mean_displacement:.1f} positions")
+        print(f"    → Average position change for shared neighbors")
+
+        if report.overall_mean_displacement < report.config.thresholds.displacement_warning:
+            print(f"    ✓ Stable ranking")
+        elif report.overall_mean_displacement < report.config.thresholds.displacement_critical:
+            print(f"    ⚠ Moderate rank shifts")
+        else:
+            print(f"    ✗ Significant rank instability")
+        print()
+
+    # Risk breakdown
     crit = report.get_critical_anchors()
     warn = report.get_warning_anchors()
-    print("DETAILS:")
-    print(f"  CRITICAL anchors: {len(crit)}")
-    print(f"  WARNING anchors: {len(warn)}")
+
+    print("RISK BREAKDOWN:")
+    print(f"  CRITICAL: {len(crit)} anchors (overlap < {report.config.thresholds.overlap_critical:.2f})")
+    print(f"  WARNING:  {len(warn)} anchors (overlap < {report.config.thresholds.overlap_warning:.2f})")
+    print(f"  SAFE:     {report.alignment.compared_anchors - len(crit) - len(warn)} anchors")
+    print()
+
+    # Actionable guidance
+    print("RECOMMENDATION:")
+    if report.overall_risk_level.value == "SAFE":
+        print("  ✓ Safe to proceed — no significant changes detected")
+    elif report.overall_risk_level.value == "INFO":
+        print("  ✓ Safe to proceed — minor changes within acceptable range")
+    elif report.overall_risk_level.value == "WARNING":
+        print("  ⚠ Review recommended — moderate changes detected")
+        print("    Consider manual validation before deploying to production")
+    elif report.overall_risk_level.value == "CRITICAL":
+        print("  ✗ Deployment NOT recommended — significant semantic drift")
+        print("    High-risk changes require investigation and validation")
+
+    print("=" * 70)
 
 
 def _print_json_summary(report) -> None:
