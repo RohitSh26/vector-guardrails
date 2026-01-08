@@ -22,7 +22,11 @@ def test_cli_compare_text_success(tmp_path: Path):
 
     res = _run_cli(["compare", "--baseline", str(b), "--candidate", str(c), "--format", "text"])
     assert res.returncode in (0, 1, 2)
-    assert "SUMMARY:" in res.stdout
+    # Check for new report format sections
+    assert "ANCHOR ALIGNMENT:" in res.stdout
+    assert "RETRIEVAL METRICS:" in res.stdout
+    assert "RISK BREAKDOWN:" in res.stdout
+    assert "RECOMMENDATION:" in res.stdout
 
 
 def test_cli_compare_writes_output(tmp_path: Path):
