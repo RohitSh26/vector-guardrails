@@ -115,9 +115,11 @@ See [`examples/`](./examples/) for runnable examples:
 
 ---
 
-## Snapshot Format
+## Core Concepts
 
-Snapshots are JSON files mapping anchor IDs to ordered neighbor lists:
+### Snapshots
+
+A **snapshot** is a JSON file capturing your retrieval system's outputs at a point in time:
 
 ```json
 {
@@ -126,24 +128,36 @@ Snapshots are JSON files mapping anchor IDs to ordered neighbor lists:
 }
 ```
 
-- **Keys:** Anchor IDs (e.g., query IDs, item IDs)
-- **Values:** Ordered list of neighbor IDs returned by retrieval
-- **K:** The `--k` flag controls how many neighbors are compared
+- **Keys:** Anchor IDs (queries, items, users—depends on your use case)
+- **Values:** Ordered lists of neighbor IDs (retrieval results, ranked by relevance)
 
----
+**New to "anchor" terminology?** See **[Understanding Anchors and Neighbors](./docs/anchor-terminology.md)** for a detailed mapping to your use case.
 
-## Key Metrics
+**Need to generate snapshots?** See **[How to Generate Snapshots](./docs/generating-snapshots.md)** for code examples across different retrieval systems.
 
-| Metric | Description | Threshold Behavior |
+### Metrics
+
+| Metric | Description | Default Thresholds |
 |--------|-------------|-------------------|
 | **Overlap@K** | Fraction of neighbors in common | < 0.70 → WARNING, < 0.50 → CRITICAL |
-| **Rank Displacement** | Mean position change of shared neighbors | > 3.0 → WARNING, > 5.0 → CRITICAL |
+| **Rank Displacement** | Average position change of shared neighbors | > 3.0 → WARNING, > 5.0 → CRITICAL |
 | **Churn Rate** | Fraction of anchors with low overlap | > 0.20 → WARNING, > 0.35 → CRITICAL |
 | **Anchor Jaccard** | Similarity of anchor ID sets | < 0.90 → WARNING |
 
-All thresholds are configurable via `ThresholdPreset`.
+**Want to understand or tune thresholds?** See **[Threshold Philosophy & Calibration Guide](./docs/thresholds-and-tuning.md)**.
 
 ---
+
+## Documentation
+
+### Getting Started
+- **[When to Use Vector Guardrails](./docs/when-to-use.md)** — Understand when (and when not) to run comparisons
+- **[How to Generate Snapshots](./docs/generating-snapshots.md)** — Code examples for search, recommendations, and RAG systems
+- **[Understanding Anchors and Neighbors](./docs/anchor-terminology.md)** — Clarify terminology for your use case
+
+### Advanced Topics
+- **[Threshold Philosophy & Calibration](./docs/thresholds-and-tuning.md)** — Why defaults exist and how to tune for your system
+- **[Examples](./examples/)** — Runnable examples demonstrating different scenarios
 
 ---
 
